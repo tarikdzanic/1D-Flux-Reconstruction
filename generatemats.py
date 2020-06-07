@@ -17,7 +17,40 @@ def solGradMat(pts):
 			M[i,j] = dlag(pts[i])
 	return M
 
-# Returns dh/dxi(xi) for a correction function 
+def solGradInterVect(pts, val):
+	npts = len(pts)
+	M = np.zeros(npts)
+
+	for i in range(npts):
+		vals = np.zeros(npts)
+		vals[i] = 1.
+		lag = interpolate.lagrange(pts, vals)
+		dlag = lag.deriv()
+		M[i] = dlag(val)
+	return M
+
+# Returns dh/dxi(xi) for a correction function
+def corrGradVect(pts, side):
+	npts = len(pts)
+	p = npts - 1
+	c = np.zeros(p+2)
+
+	if side == 'left':
+		c[p] = 0.5*(-1)**(p)
+		c[p+1] = 0.5*(-1)**(p+1)
+	else:
+		c[p] = 0.5
+		c[p+1] = 0.5
+
+	L = np.polynomial.legendre.Legendre(c)
+	Ld = L.deriv()
+
+	M = np.zeros(npts)
+
+	for i in range(npts):
+		M[i] = Ld(pts[i])
+	return M
+
 def corrGradVect(pts, side):
 	npts = len(pts)
 	p = npts - 1
